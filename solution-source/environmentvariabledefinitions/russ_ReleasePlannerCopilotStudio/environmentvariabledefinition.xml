@@ -1,0 +1,11 @@
+<environmentvariabledefinition schemaname="russ_ReleasePlannerCopilotStudio">
+  <defaultvalue>1019ec3d-1dc5-e911-a969-000d3a4f36ce</defaultvalue>
+  <displayname default="Release Planner - Copilot Studio">
+    <label description="Release Planner - Copilot Studio" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.2</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

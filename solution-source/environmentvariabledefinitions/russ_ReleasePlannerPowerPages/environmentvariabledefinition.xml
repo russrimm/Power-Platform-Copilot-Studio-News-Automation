@@ -1,0 +1,11 @@
+<environmentvariabledefinition schemaname="russ_ReleasePlannerPowerPages">
+  <defaultvalue>1197f7de-0a44-ec11-8c62-00224829b77f</defaultvalue>
+  <displayname default="Release Planner - Power Pages">
+    <label description="Release Planner - Power Pages" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.2</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

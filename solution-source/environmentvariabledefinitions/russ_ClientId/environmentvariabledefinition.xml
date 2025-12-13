@@ -1,0 +1,10 @@
+<environmentvariabledefinition schemaname="russ_ClientId">
+  <displayname default="ClientId">
+    <label description="ClientId" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.5</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

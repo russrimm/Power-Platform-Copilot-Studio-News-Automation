@@ -1,0 +1,13 @@
+<environmentvariabledefinition schemaname="russ_Secret_Key">
+  <description default="Secret Key">
+    <label description="Secret Key" languagecode="1033" />
+  </description>
+  <displayname default="Secret Key">
+    <label description="Secret Key" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.7</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

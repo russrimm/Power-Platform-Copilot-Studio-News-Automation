@@ -1,0 +1,13 @@
+<environmentvariabledefinition schemaname="russ_TenantId">
+  <description default="Enter your Entra Tenant ID">
+    <label description="Enter your Entra Tenant ID" languagecode="1033" />
+  </description>
+  <displayname default="TenantId">
+    <label description="TenantId" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.5</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

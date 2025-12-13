@@ -1,0 +1,11 @@
+<environmentvariabledefinition schemaname="russ_ReleasePlannerDataverse">
+  <defaultvalue>a0e02858-50a4-ea11-a812-000d3a8faea9</defaultvalue>
+  <displayname default="Release Planner - Dataverse">
+    <label description="Release Planner - Dataverse" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.2</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

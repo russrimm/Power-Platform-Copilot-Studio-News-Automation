@@ -1,0 +1,14 @@
+<environmentvariabledefinition schemaname="russ_ReleasePlannerPowerApps">
+  <defaultvalue>e72f17ac-715d-e911-a968-000d3a4e32b5</defaultvalue>
+  <description default="Microsoft Power Apps productId">
+    <label description="Microsoft Power Apps productId" languagecode="1033" />
+  </description>
+  <displayname default="Release Planner - Power Apps">
+    <label description="Release Planner - Power Apps" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.2</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>0</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>
