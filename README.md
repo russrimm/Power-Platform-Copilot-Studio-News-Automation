@@ -26,6 +26,94 @@ All of this information is formatted into a single HTML email digest.
 
 ---
 
+## Flow Architecture Diagram
+
+```mermaid
+graph TB
+    Start([Recurrence Trigger<br/>Weekly - Monday 9:00 AM UTC])
+    Start --> GetDates[Get Time Variables<br/>1 week, 1 month, 2 months ago]
+    
+    GetDates --> ListConnectors[List Connectors<br/>Power Automate Management API]
+    ListConnectors --> FilterConnectors[Filter Connectors<br/>Created in last 7 days]
+    FilterConnectors --> InitBlog[Initialize Blog Content Array]
+    InitBlog --> InitYouTube[Initialize YouTube Content Array]
+    
+    InitYouTube --> BlogScope{Blogs with Product<br/>Updates SCOPE}
+    
+    BlogScope --> PowerAppsBlog[List PowerApps Blog RSS]
+    BlogScope --> PowerPlatformBlog[List Power Platform Blog RSS]
+    BlogScope --> FlowBlog[List Power Automate Blog RSS]
+    BlogScope --> PowerBIBlog[List Power BI Blog RSS]
+    BlogScope --> CopilotBlog[List Copilot Studio Blog RSS]
+    BlogScope --> PPDevBlog[List PP Developer Blog RSS]
+    
+    PowerAppsBlog --> ProcessBlogs[Process Each Blog Post<br/>Extract Title, Date, Link]
+    PowerPlatformBlog --> ProcessBlogs
+    FlowBlog --> ProcessBlogs
+    PowerBIBlog --> ProcessBlogs
+    CopilotBlog --> ProcessBlogs
+    PPDevBlog --> ProcessBlogs
+    
+    ProcessBlogs --> CreateBlogTable[Create Blog HTML Table<br/>Apply CSS Formatting]
+    
+    CreateBlogTable --> BlogFail{Blog Scope<br/>Failed?}
+    BlogFail -->|Yes| NotifyBlogFail[Send Failure<br/>Notification Email]
+    BlogFail -->|No| ServiceScope
+    
+    NotifyBlogFail --> ServiceScope{Service Messages<br/>SCOPE}
+    
+    ServiceScope --> GraphAPI[HTTP: Call Microsoft Graph API<br/>GET /admin/serviceAnnouncement/messages]
+    GraphAPI --> ParseJSON[Parse JSON Response<br/>Extract Messages]
+    ParseJSON --> SelectFields[Select Fields<br/>Title, Category, ActionBy, Link]
+    SelectFields --> CreateServiceTable[Create Service Messages<br/>HTML Table with CSS]
+    
+    CreateServiceTable --> ServiceFail{Service Scope<br/>Failed?}
+    ServiceFail -->|Yes| NotifyServiceFail[Send Failure<br/>Notification Email]
+    ServiceFail -->|No| YouTubeScope
+    
+    NotifyServiceFail --> YouTubeScope{MVP YouTubes<br/>SCOPE}
+    
+    YouTubeScope --> MSPowerPlatform[Microsoft Power Platform<br/>YouTube RSS]
+    YouTubeScope --> RezaDorrani[Reza Dorrani<br/>YouTube RSS]
+    YouTubeScope --> ShaneYoung[Shane Young<br/>YouTube RSS]
+    YouTubeScope --> AprilDunnam[April Dunnam<br/>YouTube RSS]
+    YouTubeScope --> LisaCrosbie[Lisa Crosbie<br/>YouTube RSS]
+    YouTubeScope --> DewaineRobinson[Dewaine Robinson<br/>YouTube RSS]
+    YouTubeScope --> DamienBird[Damien Bird<br/>YouTube RSS]
+    YouTubeScope --> DanielChristian[Daniel Christian<br/>YouTube RSS]
+    
+    MSPowerPlatform --> ProcessYouTube[Process Each Video<br/>Extract Title, Date, Link]
+    RezaDorrani --> ProcessYouTube
+    ShaneYoung --> ProcessYouTube
+    AprilDunnam --> ProcessYouTube
+    LisaCrosbie --> ProcessYouTube
+    DewaineRobinson --> ProcessYouTube
+    DamienBird --> ProcessYouTube
+    DanielChristian --> ProcessYouTube
+    
+    ProcessYouTube --> CreateYouTubeTable[Create YouTube HTML Table<br/>Apply CSS Formatting]
+    
+    CreateYouTubeTable --> YouTubeFail{YouTube Scope<br/>Failed?}
+    YouTubeFail -->|Yes| NotifyYouTubeFail[Send Failure<br/>Notification Email]
+    YouTubeFail -->|No| SendEmail
+    
+    NotifyYouTubeFail --> SendEmail[Send Digest Email<br/>Office 365 Outlook<br/>With all HTML sections]
+    
+    SendEmail --> End([End])
+    
+    style Start fill:#4CAF50,stroke:#2E7D32,color:#fff
+    style End fill:#f44336,stroke:#c62828,color:#fff
+    style BlogScope fill:#2196F3,stroke:#1565C0,color:#fff
+    style ServiceScope fill:#2196F3,stroke:#1565C0,color:#fff
+    style YouTubeScope fill:#2196F3,stroke:#1565C0,color:#fff
+    style SendEmail fill:#FF9800,stroke:#E65100,color:#fff
+    style GraphAPI fill:#9C27B0,stroke:#6A1B9A,color:#fff
+```
+
+This diagram shows the complete flow structure with three main processing scopes (Blogs, Service Messages, YouTube) that run sequentially with error handling at each stage.
+
+---
+
 ## Installation Instructions
 
 ### Step 1: Import the Solution
@@ -297,94 +385,6 @@ For issues or enhancements, please submit an issue or pull request to the reposi
 ## License
 
 This solution is provided as-is for use within your Power Platform environment.
-
----
-
-## Flow Architecture Diagram
-
-```mermaid
-graph TB
-    Start([Recurrence Trigger<br/>Weekly - Monday 9:00 AM UTC])
-    Start --> GetDates[Get Time Variables<br/>1 week, 1 month, 2 months ago]
-    
-    GetDates --> ListConnectors[List Connectors<br/>Power Automate Management API]
-    ListConnectors --> FilterConnectors[Filter Connectors<br/>Created in last 7 days]
-    FilterConnectors --> InitBlog[Initialize Blog Content Array]
-    InitBlog --> InitYouTube[Initialize YouTube Content Array]
-    
-    InitYouTube --> BlogScope{Blogs with Product<br/>Updates SCOPE}
-    
-    BlogScope --> PowerAppsBlog[List PowerApps Blog RSS]
-    BlogScope --> PowerPlatformBlog[List Power Platform Blog RSS]
-    BlogScope --> FlowBlog[List Power Automate Blog RSS]
-    BlogScope --> PowerBIBlog[List Power BI Blog RSS]
-    BlogScope --> CopilotBlog[List Copilot Studio Blog RSS]
-    BlogScope --> PPDevBlog[List PP Developer Blog RSS]
-    
-    PowerAppsBlog --> ProcessBlogs[Process Each Blog Post<br/>Extract Title, Date, Link]
-    PowerPlatformBlog --> ProcessBlogs
-    FlowBlog --> ProcessBlogs
-    PowerBIBlog --> ProcessBlogs
-    CopilotBlog --> ProcessBlogs
-    PPDevBlog --> ProcessBlogs
-    
-    ProcessBlogs --> CreateBlogTable[Create Blog HTML Table<br/>Apply CSS Formatting]
-    
-    CreateBlogTable --> BlogFail{Blog Scope<br/>Failed?}
-    BlogFail -->|Yes| NotifyBlogFail[Send Failure<br/>Notification Email]
-    BlogFail -->|No| ServiceScope
-    
-    NotifyBlogFail --> ServiceScope{Service Messages<br/>SCOPE}
-    
-    ServiceScope --> GraphAPI[HTTP: Call Microsoft Graph API<br/>GET /admin/serviceAnnouncement/messages]
-    GraphAPI --> ParseJSON[Parse JSON Response<br/>Extract Messages]
-    ParseJSON --> SelectFields[Select Fields<br/>Title, Category, ActionBy, Link]
-    SelectFields --> CreateServiceTable[Create Service Messages<br/>HTML Table with CSS]
-    
-    CreateServiceTable --> ServiceFail{Service Scope<br/>Failed?}
-    ServiceFail -->|Yes| NotifyServiceFail[Send Failure<br/>Notification Email]
-    ServiceFail -->|No| YouTubeScope
-    
-    NotifyServiceFail --> YouTubeScope{MVP YouTubes<br/>SCOPE}
-    
-    YouTubeScope --> MSPowerPlatform[Microsoft Power Platform<br/>YouTube RSS]
-    YouTubeScope --> RezaDorrani[Reza Dorrani<br/>YouTube RSS]
-    YouTubeScope --> ShaneYoung[Shane Young<br/>YouTube RSS]
-    YouTubeScope --> AprilDunnam[April Dunnam<br/>YouTube RSS]
-    YouTubeScope --> LisaCrosbie[Lisa Crosbie<br/>YouTube RSS]
-    YouTubeScope --> DewaineRobinson[Dewaine Robinson<br/>YouTube RSS]
-    YouTubeScope --> DamienBird[Damien Bird<br/>YouTube RSS]
-    YouTubeScope --> DanielChristian[Daniel Christian<br/>YouTube RSS]
-    
-    MSPowerPlatform --> ProcessYouTube[Process Each Video<br/>Extract Title, Date, Link]
-    RezaDorrani --> ProcessYouTube
-    ShaneYoung --> ProcessYouTube
-    AprilDunnam --> ProcessYouTube
-    LisaCrosbie --> ProcessYouTube
-    DewaineRobinson --> ProcessYouTube
-    DamienBird --> ProcessYouTube
-    DanielChristian --> ProcessYouTube
-    
-    ProcessYouTube --> CreateYouTubeTable[Create YouTube HTML Table<br/>Apply CSS Formatting]
-    
-    CreateYouTubeTable --> YouTubeFail{YouTube Scope<br/>Failed?}
-    YouTubeFail -->|Yes| NotifyYouTubeFail[Send Failure<br/>Notification Email]
-    YouTubeFail -->|No| SendEmail
-    
-    NotifyYouTubeFail --> SendEmail[Send Digest Email<br/>Office 365 Outlook<br/>With all HTML sections]
-    
-    SendEmail --> End([End])
-    
-    style Start fill:#4CAF50,stroke:#2E7D32,color:#fff
-    style End fill:#f44336,stroke:#c62828,color:#fff
-    style BlogScope fill:#2196F3,stroke:#1565C0,color:#fff
-    style ServiceScope fill:#2196F3,stroke:#1565C0,color:#fff
-    style YouTubeScope fill:#2196F3,stroke:#1565C0,color:#fff
-    style SendEmail fill:#FF9800,stroke:#E65100,color:#fff
-    style GraphAPI fill:#9C27B0,stroke:#6A1B9A,color:#fff
-```
-
-This diagram shows the complete flow structure with three main processing scopes (Blogs, Service Messages, YouTube) that run sequentially with error handling at each stage.
 
 ---
 
