@@ -4,7 +4,7 @@ This Power Automate flow automatically collects and summarizes the latest Power 
 
 ## Overview
 
-The flow runs weekly (Thursday and Friday at 9:00 AM UTC) and compiles:
+The flow runs weekly based on your trigger run frequency and compiles:
 - **Service Messages** from Microsoft 365 Message Center
 - **Blog Posts** from official Power Platform product blogs
 - **YouTube Videos** from Microsoft and MVP content creators
@@ -48,6 +48,53 @@ After the connections are set, you'll be prompted to enter values for environmen
 | **Secret Key** | Azure AD App Registration Secret | `your-secret-key-here` |
 
 > **Note:** The ClientId, TenantId, and Secret Key are used to authenticate with Microsoft Graph API to retrieve service announcements. You won't see the environment variable configuration screen if values are already present in the solution.
+
+#### Microsoft Graph API Prerequisites
+
+This flow retrieves **Message Center messages** from the [Service Announcement API](https://learn.microsoft.com/graph/api/serviceannouncement-list-messages?view=graph-rest-1.0&tabs=http) using the endpoint:
+```
+GET https://graph.microsoft.com/v1.0/admin/serviceAnnouncement/messages
+```
+
+Your Entra ID app registration must have **read access** to the Microsoft Graph API with the following permission:
+- **ServiceMessage.Read.All** (Application permission)
+
+**What's Available:**
+The Service Announcement API provides access to various Microsoft 365 service communications:
+- **Message Center messages** - Service updates, new features, and planned changes (used by this flow)
+- **Service Health issues** - Current service incidents and advisories
+- **Service Health overviews** - Overall health status of Microsoft 365 services
+- **Planned maintenance** - Scheduled maintenance windows
+
+You can extend this flow to include Service Health data by calling additional endpoints. Learn more in the [serviceAnnouncement resource type documentation](https://learn.microsoft.com/graph/api/resources/serviceannouncement).
+
+**Required Setup:**
+1. Create an Azure AD App Registration in your [Azure Portal](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
+2. Grant the **ServiceMessage.Read.All** API permission (Application type)
+3. Admin consent is required for this permission
+4. Generate a client secret for authentication
+
+**Important for Testing:**
+- Message Center data is only available in production Microsoft 365 tenants with active subscriptions
+- For testing purposes, consider using:
+  - [Microsoft 365 Developer Subscription](https://developer.microsoft.com/microsoft-365/dev-program) (free for development/testing)
+  - A non-production tenant with test data
+
+**Reference Documentation:**
+- [List service announcement messages](https://learn.microsoft.com/graph/api/serviceannouncement-list-messages?view=graph-rest-1.0&tabs=http)
+- [ServiceUpdateMessage resource type](https://learn.microsoft.com/graph/api/resources/serviceupdatemessage?view=graph-rest-1.0)
+- [Microsoft Graph permissions reference](https://learn.microsoft.com/graph/permissions-reference#serviceannouncement-permissions)
+
+#### Additional Data Sources (No Authentication Required)
+
+You can extend this flow to include data from public **Release Planner APIs** that don't require authentication:
+
+- **Power Platform Release Planner** - `https://releaseplans.microsoft.com/api/v1/plans/power-platform`
+- **Microsoft 365 Release Planner** - `https://releaseplans.microsoft.com/api/v1/plans/microsoft-365`
+- **Azure Release Planner** - `https://releaseplans.microsoft.com/api/v1/plans/azure`
+- **Microsoft Fabric Release Planner** - `https://releaseplans.microsoft.com/api/v1/plans/microsoft-fabric`
+
+These public APIs provide structured data about upcoming features, release waves, and product roadmaps. Add HTTP actions to the flow to call these endpoints and include the data in your email digest.
 
 ### Step 4: Publish and Turn On the Flow
 
