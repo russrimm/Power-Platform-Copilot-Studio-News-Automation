@@ -236,10 +236,8 @@ This solution is provided as-is for use within your Power Platform environment.
 
 ---
 
-## Screenshots
+## Sample Email Output
 
-Sample email output:
+View the live sample email with actual CSS styling: [sample-email.html](sample-email.html)
 
-![Sample](./images/snip1.png)
-![Sample](./images/snip2.png)
-![Sample](./images/snip3.png)
+This HTML file uses the exact same CSS and structure as the actual email sent by the flow, so you can see how it will look in a browser.
