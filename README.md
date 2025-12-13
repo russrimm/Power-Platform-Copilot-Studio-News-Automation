@@ -43,9 +43,9 @@ After the connections are set, you'll be prompted to enter values for environmen
 | Variable Name | Description | Example |
 |---------------|-------------|---------|
 | **Email Recipient** | Email address to receive the digest | `yourname@company.com` |
-| **ClientId** | Azure AD App Registration Client ID | `32c72b33-a331-4545-ad5a-6d2fdf961c4c` |
-| **TenantId** | Your Azure/Entra Tenant ID | `f33d7d7f-d7a8-49c9-9dfe-af8c9ca30123` |
-| **Secret Key** | Azure AD App Registration Secret | `5mW8Q~uZjZ...` |
+| **ClientId** | Azure AD App Registration Client ID | `00000000-0000-0000-0000-000000000000` |
+| **TenantId** | Your Azure/Entra Tenant ID | `00000000-0000-0000-0000-000000000000` |
+| **Secret Key** | Azure AD App Registration Secret | `your-secret-key-here` |
 
 > **Note:** The ClientId, TenantId, and Secret Key are used to authenticate with Microsoft Graph API to retrieve service announcements. You won't see the environment variable configuration screen if values are already present in the solution.
 
