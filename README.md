@@ -179,7 +179,7 @@ The flow calls Microsoft Graph API to retrieve service announcements:
 
 Formats the data into an HTML table with CSS styling for better readability.
 
-> **Note:** This flow was originally designed to link Message Center messages to [MSPulse360.app](https://www.mspulse360.app) - a comprehensive site aggregating news and updates from Microsoft services across multiple sources. You can modify the link structure in the flow to point to your preferred Message Center viewing experience.
+> **Note:** This flow uses an API running on [MSPulse360.app](https://www.mspulse360.app) to display Message Center messages. The site itself provides a wealth of updates and news from Microsoft services across multiple sources. You can modify the link structure in the flow to point to your preferred Message Center viewing experience or API endpoint.
 
 ### Stage 4: Find New Connectors
 
