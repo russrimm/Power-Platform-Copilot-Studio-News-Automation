@@ -29,12 +29,12 @@ All of this information is formatted into a single HTML email digest.
 ## Installation Instructions
 
 ### Step 1: Import the Solution
-1. Download the solution as a `.zip` file (or `.cab` file)
+1. Download the solution as a `.zip` file
 2. Sign in to [Power Apps](https://make.powerapps.com)
 3. Select your target environment from the environment picker
 4. Select **Solutions** from the left navigation. If the item isn't in the side panel, select **...More** and then select **Solutions**
 5. On the command bar, select **Import solution**
-6. On the **Import a solution** page, select **Browse** to locate the compressed `.zip` file that contains the solution
+6. On the **Import a solution** page, select **Browse** to locate the `.zip` file that contains the solution
 7. Select **Next**
 8. Review the solution information displayed. The solution will be imported as **Unmanaged** by default
 9. Configure any connection references if prompted (see Step 3 below)
@@ -58,11 +58,11 @@ After the connections are set, you'll be prompted to enter values for environmen
 | Variable Name | Description | Example |
 |---------------|-------------|---------|
 | **Email Recipient** | Email address to receive the digest | `yourname@company.com` |
-| **ClientId** | Azure AD App Registration Client ID | `00000000-0000-0000-0000-000000000000` |
-| **TenantId** | Your Azure/Entra Tenant ID | `00000000-0000-0000-0000-000000000000` |
-| **Secret Key** | Azure AD App Registration Secret | `your-secret-key-here` |
+| **ClientId** | Azure AD App Registration Client ID (optional) | `00000000-0000-0000-0000-000000000000` |
+| **TenantId** | Your Azure/Entra Tenant ID (optional) | `00000000-0000-0000-0000-000000000000` |
+| **Secret Key** | Azure AD App Registration Secret (optional) | `your-secret-key-here` |
 
-> **Note:** The ClientId, TenantId, and Secret Key are used to authenticate with Microsoft Graph API to retrieve service announcements. You won't see the environment variable configuration screen if values are already present in the solution.
+> **Note:** The ClientId, TenantId, and Secret Key are **only required if you're using the HTTP connector** to retrieve Microsoft 365 Message Center messages or other data from Azure/Microsoft Graph API. If you're not using the Service Messages scope or don't have access to an Azure subscription, you can leave these blank or remove the HTTP connector actions from the flow. You won't see the environment variable configuration screen if values are already present in the solution.
 
 #### Microsoft Graph API Prerequisites
 
@@ -127,7 +127,7 @@ These public APIs provide structured data about upcoming features, release waves
 ## How the Flow Works
 
 ### Schedule & Timing Variables
-- **Trigger:** Runs weekly on Thursday and Friday at 9:00 AM UTC
+- **Trigger:** Designed to run weekly (default schedule can be customized)
 - **Time Variables:**
   - Gets dates for 1 week ago (9 days to ensure coverage)
   - Gets dates for 1 month ago
