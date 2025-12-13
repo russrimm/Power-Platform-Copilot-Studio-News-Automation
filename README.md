@@ -204,7 +204,7 @@ Edit the **Compose_email_with_CSS** action to modify:
 
 ## Technical Details
 
-### APIs Used
+### Connectors Used
 - **RSS Connector** - Reads XML feeds from blogs and YouTube
 - **Microsoft Graph API** - Retrieves service announcements
 - **Power Automate Management API** - Lists connectors
@@ -240,6 +240,6 @@ This solution is provided as-is for use within your Power Platform environment.
 
 Sample email output:
 
-![Sample](./snip1.png)
-![Sample](./snip2.png)
-![Sample](./snip3.png)
+![Sample](./images/snip1.png)
+![Sample](./images/snip2.png)
+![Sample](./images/snip3.png)
