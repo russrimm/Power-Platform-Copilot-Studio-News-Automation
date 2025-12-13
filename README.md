@@ -388,6 +388,6 @@ This diagram shows the complete flow structure with three main processing scopes
 
 ## Sample Email Output
 
-View the live sample email with actual CSS styling: [sample-email.html](sample-email.html)
+View the live sample email with actual CSS styling: [sample-email.html](https://russrimm.github.io/Power-Platform-Copilot-Studio-News-Automation/sample-email.html)
 
 This HTML file uses the exact same CSS and structure as the actual email sent by the flow, so you can see how it will look in a browser.
