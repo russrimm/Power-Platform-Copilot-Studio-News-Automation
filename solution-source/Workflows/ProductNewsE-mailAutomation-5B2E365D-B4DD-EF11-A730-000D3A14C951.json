@@ -1,0 +1,1473 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_rss": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "russ_sharedrss_32355"
+        },
+        "api": {
+          "name": "shared_rss"
+        }
+      },
+      "shared_office365_2": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "russ_Outlook"
+        },
+        "api": {
+          "name": "shared_office365"
+        }
+      },
+      "shared_flowmanagement": {
+        "runtimeSource": "embedded",
+        "connection": {
+          "connectionReferenceLogicalName": "russ_sharedflowmanagement_3fc2b"
+        },
+        "api": {
+          "name": "shared_flowmanagement"
+        }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "Email Recipient (russ_EmailTo)": {
+          "defaultValue": "rurimmer@microsoft.com",
+          "type": "String",
+          "metadata": {
+            "schemaName": "russ_EmailTo",
+            "description": "Recipient to Email"
+          }
+        },
+        "ClientId (russ_ClientId)": {
+          "defaultValue": "",
+          "type": "String",
+          "metadata": {
+            "schemaName": "russ_ClientId"
+          }
+        },
+        "TenantId (russ_TenantId)": {
+          "defaultValue": "",
+          "type": "String",
+          "metadata": {
+            "schemaName": "russ_TenantId",
+            "description": "Enter your Entra Tenant ID"
+          }
+        },
+        "Secret Key (russ_Secret_Key)": {
+          "defaultValue": "",
+          "type": "String",
+          "metadata": {
+            "schemaName": "russ_Secret_Key",
+            "description": "Secret Key"
+          }
+        }
+      },
+      "triggers": {
+        "Recurrence": {
+          "recurrence": {
+            "frequency": "Week",
+            "interval": 1,
+            "startTime": "2019-10-03T09:00:00Z",
+            "schedule": {
+              "weekDays": [
+                "Monday"
+              ]
+            }
+          },
+          "evaluatedRecurrence": {
+            "frequency": "Week",
+            "interval": 1,
+            "startTime": "2019-10-03T09:00:00Z",
+            "schedule": {
+              "weekDays": [
+                "Monday"
+              ]
+            }
+          },
+          "metadata": {
+            "operationMetadataId": "222f3af5-b742-41ed-8797-4f4fa4264f14"
+          },
+          "type": "Recurrence"
+        }
+      },
+      "actions": {
+        "Initialize_Blog_Content_Array": {
+          "runAfter": {
+            "Apply_to_each": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "074763bf-7747-40b0-b485-506e4c660d83"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "blogContent",
+                "type": "Array"
+              }
+            ]
+          }
+        },
+        "Blogs_with_Product_Updates_SCOPE": {
+          "actions": {
+            "List_PowerApps_Blog_RSS_feed_items": {
+              "runAfter": {},
+              "metadata": {
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                },
+                "operationMetadataId": "e561cc2d-d19c-4571-b715-f415ce404f5c"
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://powerapps.microsoft.com/en-us/blog/feed/",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "List_Flow_Blog_RSS_feed_items": {
+              "runAfter": {
+                "List_Power_Platform_RSS_feed": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                },
+                "operationMetadataId": "79f08b44-3bf8-46aa-94ae-d0e9a05a5164"
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://flow.microsoft.com/en-us/blog/feed/",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "List_Power_BI_RSS_feed_items": {
+              "runAfter": {
+                "List_Flow_Blog_RSS_feed_items": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                },
+                "operationMetadataId": "476766ee-86c0-4357-9b26-66a92acbf5bd"
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://powerbi.microsoft.com/en-us/blog/feed/",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "List_Copilot_Studio_RSS_feed_items": {
+              "runAfter": {
+                "List_Power_BI_RSS_feed_items": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                },
+                "operationMetadataId": "a48fcacb-e631-4233-868b-639d7ffb273d"
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.microsoft.com/en-us/microsoft-copilot/blog/feed/",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_PowerApps_Blog_post": {
+              "foreach": "@body('List_PowerApps_Blog_RSS_feed_items')",
+              "actions": {
+                "Add_PowerApps_Blog_post_to_array": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "8407915f-1c84-4715-ba00-d7d725394931"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "blogContent",
+                    "value": {
+                      "Topic": "Power Apps",
+                      "Summary": "@items('Apply_to_each_PowerApps_Blog_post')?['summary']",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "List_Power_Platform_Developer_feed_items": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "26bb07d9-37f5-4eff-b3cb-bad8891789dd"
+              },
+              "type": "Foreach"
+            },
+            "Apply_to_each_Flow_Blog_post": {
+              "foreach": "@body('List_Flow_Blog_RSS_feed_items')",
+              "actions": {
+                "Add_Flow_Blog_post_to_array": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "8aca39fd-08ae-4ac4-998d-d3e6bef7c4a3"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "blogContent",
+                    "value": {
+                      "Topic": "Power Automate",
+                      "Summary": "@items('Apply_to_each_Flow_Blog_post')?['summary']",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Power_Platform_Blog_post": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "2c053158-4b41-4443-a505-abea0b07885c"
+              },
+              "type": "Foreach"
+            },
+            "Apply_to_each_Power_BI_Blog_Post": {
+              "foreach": "@body('List_Power_BI_RSS_feed_items')",
+              "actions": {
+                "Add_Power_BI_Blog_post_to_array": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "3367eca2-535d-474f-a969-ccf19b5ba15f"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "blogContent",
+                    "value": {
+                      "Topic": "Power BI",
+                      "Summary": "@items('Apply_to_each_Power_BI_Blog_Post')?['summary']",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Flow_Blog_post": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "c486407f-4712-4b01-b329-457f2cb3f68d"
+              },
+              "type": "Foreach"
+            },
+            "Apply_to_each_Copilot_Studio_Blog_Post": {
+              "foreach": "@body('List_Copilot_Studio_RSS_feed_items')",
+              "actions": {
+                "Add_Copilot_Studio_Blog_post_to_array": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "f46005dd-2a24-4d27-bbfa-578a29e93fce"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "blogContent",
+                    "value": {
+                      "Topic": "Copilot Studio",
+                      "Summary": "@items('Apply_to_each_Copilot_Studio_Blog_Post')?['summary']",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Power_BI_Blog_Post": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "3b9cd109-2064-49a1-b45a-63a734c3df4e"
+              },
+              "type": "Foreach"
+            },
+            "Create_Blog_HTML_table": {
+              "runAfter": {
+                "Apply_to_each_Power_Platform_Developer_Blog_Post": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "e0ae4972-cb75-48a1-899c-c2bd09cb6212"
+              },
+              "type": "Table",
+              "inputs": {
+                "from": "@variables('blogContent')",
+                "format": "HTML"
+              }
+            },
+            "Compose_Blog_HTML_Table": {
+              "runAfter": {
+                "Create_Blog_HTML_table": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "cc272c8f-1149-4d2f-b514-0db3e2f660e9"
+              },
+              "type": "Compose",
+              "inputs": "@replace(replace(replace(replace(body('Create_Blog_HTML_table'), '&lt;', '<'), '&gt;', '>'), '&quot;', '\"'),'&amp;', '&')"
+            },
+            "List_Power_Platform_RSS_feed": {
+              "runAfter": {
+                "List_PowerApps_Blog_RSS_feed_items": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "c8fa6313-7978-4446-b2a8-87d85a2bda56",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.microsoft.com/en-us/power-platform/blog/feed/",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_Power_Platform_Blog_post": {
+              "foreach": "@body('List_Power_Platform_RSS_feed')",
+              "actions": {
+                "Add_Power_Platform_Blog_post": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "8407915f-1c84-4715-ba00-d7d725394931"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "blogContent",
+                    "value": {
+                      "Topic": "Power Platform",
+                      "Summary": "@items('Apply_to_each_Power_Platform_Blog_post')?['summary']",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_PowerApps_Blog_post": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "26bb07d9-37f5-4eff-b3cb-bad8891789dd"
+              },
+              "type": "Foreach"
+            },
+            "List_Power_Platform_Developer_feed_items": {
+              "runAfter": {
+                "List_Copilot_Studio_RSS_feed_items": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "ce0b7f26-5668-4009-ab39-b9379eb08419",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://devblogs.microsoft.com/powerplatform/feed/",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_Power_Platform_Developer_Blog_Post": {
+              "foreach": "@body('List_Power_Platform_Developer_feed_items')",
+              "actions": {
+                "Append_to_array_variable": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "cb0705ac-ecc8-4f27-84bf-eec4c0a9717f"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "blogContent",
+                    "value": {
+                      "Topic": "Power Platform Development",
+                      "Summary": "@items('Apply_to_each_Power_Platform_Developer_Blog_Post')?['summary']",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Copilot_Studio_Blog_Post": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "68b5d65b-fee2-49c7-8562-ed2d7d643b14"
+              },
+              "type": "Foreach"
+            }
+          },
+          "runAfter": {
+            "Initialize_YouTube_Content_Array": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "2c70f0fd-36c8-4760-9653-701a37a46571"
+          },
+          "type": "Scope"
+        },
+        "Service_Messages_SCOPE": {
+          "actions": {
+            "List_serviceAnnouncements_from_Graph": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "e653ff41-ec27-4ca7-a1cf-5f232ec95edd"
+              },
+              "type": "Http",
+              "inputs": {
+                "method": "GET",
+                "uri": "https://graph.microsoft.com/v1.0/admin/serviceAnnouncement/messages",
+                "queries": {
+                  "$filter": "startDateTime gt @{body('Get_1_week_ago')} and ('Power Apps' in services or 'Microsoft Power Automate' in services or 'Power Apps in Microsoft 365' in services or 'Power Automate in Microsoft 365' in services or 'Power BI' in services or 'Power Platform' in services or 'Microsoft Dataverse' in services)",
+                  "$orderby": "startDateTime desc"
+                },
+                "authentication": {
+                  "type": "ActiveDirectoryOAuth",
+                  "authority": "https://login.microsoftonline.com",
+                  "tenant": "@parameters('TenantId (russ_TenantId)')",
+                  "audience": "https://graph.microsoft.com",
+                  "clientId": "@parameters('ClientId (russ_ClientId)')",
+                  "secret": "@parameters('Secret Key (russ_Secret_Key)')"
+                }
+              },
+              "runtimeConfiguration": {
+                "contentTransfer": {
+                  "transferMode": "Chunked"
+                }
+              }
+            },
+            "Parse_JSON": {
+              "runAfter": {
+                "List_serviceAnnouncements_from_Graph": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "6ece0f9c-8c51-49df-8d17-4a81a4f0edaf"
+              },
+              "type": "ParseJson",
+              "inputs": {
+                "content": "@body('List_serviceAnnouncements_from_Graph')?['value']",
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "startDateTime": {
+                        "type": "string"
+                      },
+                      "endDateTime": {
+                        "type": "string"
+                      },
+                      "lastModifiedDateTime": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "category": {
+                        "type": "string"
+                      },
+                      "severity": {
+                        "type": "string"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "isMajorChange": {
+                        "type": "boolean"
+                      },
+                      "actionRequiredByDateTime": {},
+                      "services": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "expiryDateTime": {},
+                      "viewPoint": {},
+                      "details": {
+                        "type": "array"
+                      },
+                      "body": {
+                        "type": "object",
+                        "properties": {
+                          "contentType": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "required": []
+                  }
+                }
+              }
+            },
+            "Select": {
+              "runAfter": {
+                "Parse_JSON": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "58662137-0fba-4ae7-af06-d0d931dbeefd"
+              },
+              "type": "Select",
+              "inputs": {
+                "from": "@body('Parse_JSON')",
+                "select": {
+                  "Message ID": "<a href=\"https://mspulse360.app/message/@{toUpper(item()?['id'])}\">@{item()?['id']}</a>",
+                  "Title": " @{item()['title']} ",
+                  "Published": " @{formatDateTime(item()?['startDateTime'], 'MM/dd/yyyy')}",
+                  "Product": "@replace(replace(replace(string(item()?['services']),'[',''),']',''),'\"','')",
+                  "Tags": "@replace(replace(replace(string(item()?['tags']),'[',''),']',''),'\"','')"
+                }
+              }
+            },
+            "Create_HTML_table": {
+              "runAfter": {
+                "Select": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "743d21ad-f448-436f-aba6-89e6ffa93c8b"
+              },
+              "type": "Table",
+              "inputs": {
+                "from": "@body('Select')",
+                "format": "HTML"
+              }
+            },
+            "Strip_out_special_HTML_chars": {
+              "runAfter": {
+                "Create_HTML_table": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "a2dd3512-29eb-4c99-9177-cd676bd1c6d9"
+              },
+              "type": "Compose",
+              "inputs": "@replace(replace(replace(replace(replace(body('Create_HTML_table'),'&lt','<'),'&quot','\"'),'&gt','>'),'&amp','&'),';','')"
+            },
+            "Compose_email_with_CSS": {
+              "runAfter": {
+                "Strip_out_special_HTML_chars": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "387fb219-b624-4e73-8aa3-db5d2ce4d3d6"
+              },
+              "type": "Compose",
+              "inputs": "<style>\n  table {\n    width: 100%;\n    border-collapse: separate;\n    border-spacing: 0;\n    font-family: 'Segoe UI', Calibri, Arial, sans-serif;\n    font-size: 13px;\n    margin: 16px 0;\n    border: none;\n    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);\n    border-radius: 6px;\n    overflow: hidden;\n    background-color: #ffffff; /* fixes forced dark mode background inversion */\n    color: #111827;\n  }\n\n  thead {\n    background-color: #1f2937; /* dark header */\n    color: #ffffff;\n  }\n\n  thead th {\n    text-align: left;\n    padding: 10px 12px;\n    font-weight: 600;\n    letter-spacing: 0.5px;\n    border-bottom: 1px solid #374151;\n  }\n\n  tbody tr {\n    transition: background-color 0.2s;\n    background-color: #ffffff;\n  }\n\n  tbody tr:nth-child(even) {\n    background-color: #f9fafb;\n  }\n\n  tbody tr:hover {\n    background-color: #e5e7eb; /* light gray safe for both light & dark mode */\n  }\n\n  tbody td {\n    padding: 10px 12px;\n    border-bottom: 1px solid #e5e7eb;\n    vertical-align: middle;\n    color: #111827; /* ensures text remains dark even if Outlook inverts background */\n  }\n\n  tbody tr:last-child td {\n    border-bottom: none;\n  }\n</style>\n@{outputs('Strip_out_special_HTML_chars')}"
+            }
+          },
+          "runAfter": {
+            "Notify_of_failure": [
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "906cf5af-8d04-44db-a305-e37cc6128d8d"
+          },
+          "type": "Scope"
+        },
+        "Send_the_email": {
+          "runAfter": {
+            "Notify_of_failure_3": [
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "04013dcb-797b-4022-8e81-ea0d3f5d94e6"
+          },
+          "type": "OpenApiConnection",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_office365_2",
+              "operationId": "SendEmailV2",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+            },
+            "parameters": {
+              "emailMessage/To": "@parameters('Email Recipient (russ_EmailTo)')",
+              "emailMessage/Subject": "Power Platform & Copilot Studio News for @{formatDateTime(utcNow(), 'MM/dd/yyyy')}",
+              "emailMessage/Body": "<span style=\"font-size: 20px\"><b><center>Power Platform Message Center Messages</center></b></span>\n@{outputs('Compose_email_with_CSS')}\n<br>\n<span style=\"font-size: 20px\"><b><center>Power Platform News</center></b></span>\n@{outputs('Compose_Blog_HTML_Table')}\n<br>\n<span style=\"font-size: 20px\"><b><center>Power Platform Videos</center></b></span>\n@{outputs('Compose_YouTube_HTML')}\n<br><br>\n<body>\n<span style=\"font-size: 20px\"><center>New Connectors</center></span>\n<table cellpadding=\"10\">\n<tr><td><b>Connector Name</b></td><td><b>Created on</b></td></tr>@{join(outputs('Compose'),'')}</table></body>\n<br>",
+              "emailMessage/Importance": "Normal"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Get_1_month_ago": {
+          "runAfter": {
+            "Get_1_week_ago": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e1ec3da4-94c4-4cdc-8d5c-502372bfb3c9"
+          },
+          "type": "Expression",
+          "kind": "GetPastTime",
+          "inputs": {
+            "interval": 1,
+            "timeUnit": "Month"
+          }
+        },
+        "Get_2_months_ago": {
+          "runAfter": {
+            "Get_1_month_ago": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "e1ec3da4-94c4-4cdc-8d5c-502372bfb3c9"
+          },
+          "type": "Expression",
+          "kind": "GetPastTime",
+          "inputs": {
+            "interval": 2,
+            "timeUnit": "Month"
+          }
+        },
+        "MVP_YouTubes_Scope": {
+          "actions": {
+            "Reza_Dorrani": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "0eaedd71-6f63-4f78-ab88-8c1826c50b2c",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCvBYTqRx-n_8KzFO0MJlUVw",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_Reza_Dorrani": {
+              "foreach": "@body('Reza_Dorrani')",
+              "actions": {
+                "Append_Reza_Dorrani": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "b1f2c285-b080-4189-9186-bdbc8403c3ea"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "YouTubeContent",
+                    "value": {
+                      "Channel": "Reza Dorrani",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Microsoft_Power_Platform": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "171b4309-9d57-4761-be5b-da06af6493ad"
+              },
+              "type": "Foreach"
+            },
+            "Create_YouTube_HTML_Table": {
+              "runAfter": {
+                "Apply_to_each_Microsoft_Power_Platform": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "62598214-a6b3-4de1-8f7e-f450344af786"
+              },
+              "type": "Table",
+              "inputs": {
+                "from": "@variables('YouTubeContent')",
+                "format": "HTML"
+              }
+            },
+            "Compose_YouTube_HTML": {
+              "runAfter": {
+                "Create_YouTube_HTML_Table": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "ad3ec389-5ab6-4b32-a5cd-9b007d08c5c5"
+              },
+              "type": "Compose",
+              "inputs": "@replace(replace(replace(replace(body('Create_YouTube_HTML_Table'), '&lt;', '<'), '&gt;', '>'), '&quot;', '\"'),'&amp;', '&')"
+            },
+            "Shang_Young": {
+              "runAfter": {
+                "Reza_Dorrani": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "b8a98939-a807-45e6-b37e-36e7a705ef65",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC7_OGRP8BYvtGB8eZdPG6Ng",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Microsoft_Power_Platform": {
+              "runAfter": {
+                "Daniel_Christian": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "03afc81a-2601-4f43-baaf-1c3eba9811d2",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCgc3NEslE8oISOEawhcpMCA",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_Microsoft_Power_Platform": {
+              "foreach": "@body('Microsoft_Power_Platform')",
+              "actions": {
+                "Append_Microsoft_Power_Platform": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "1b47b055-7406-45dc-b945-9829be082933"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "YouTubeContent",
+                    "value": {
+                      "Channel": "Microsoft Power Platform",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Daniel_Christian": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "0f78a98a-ea5b-4e87-b022-339b5ca2c10d"
+              },
+              "type": "Foreach"
+            },
+            "Apply_to_each_Shane_Young": {
+              "foreach": "@body('Shang_Young')",
+              "actions": {
+                "Append_Shane_Young": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "75e0874f-069d-4c16-b5f9-ddedd211d160"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "YouTubeContent",
+                    "value": {
+                      "Channel": "Shane Young",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Reza_Dorrani": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "49a9dbab-5a77-4f81-8e79-6b5d3bde94f4"
+              },
+              "type": "Foreach"
+            },
+            "April_Dunnam": {
+              "runAfter": {
+                "Shang_Young": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "567b0820-b722-4f67-867d-d55c15dce959",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCz_x76EBX5UXsV27drGNh6w",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_April_Dunnam": {
+              "foreach": "@body('April_Dunnam')",
+              "actions": {
+                "Append_April_Dunnam": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "75e0874f-069d-4c16-b5f9-ddedd211d160"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "YouTubeContent",
+                    "value": {
+                      "Channel": "April Dunnam",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Shane_Young": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "49a9dbab-5a77-4f81-8e79-6b5d3bde94f4"
+              },
+              "type": "Foreach"
+            },
+            "Lisa_Crosbie": {
+              "runAfter": {
+                "April_Dunnam": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "567b0820-b722-4f67-867d-d55c15dce959",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCvxCGKv4WSq49LfNIfZEEtg",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_Lisa_Crosbie": {
+              "foreach": "@body('Lisa_Crosbie')",
+              "actions": {
+                "Append_Lisa_Crosbie": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "75e0874f-069d-4c16-b5f9-ddedd211d160"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "YouTubeContent",
+                    "value": {
+                      "Channel": "Lisa Crosbie",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_April_Dunnam": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "49a9dbab-5a77-4f81-8e79-6b5d3bde94f4"
+              },
+              "type": "Foreach"
+            },
+            "Dewaine_Robinson": {
+              "runAfter": {
+                "Lisa_Crosbie": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "567b0820-b722-4f67-867d-d55c15dce959",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UCSxb0EDb5vw4pRcgW0hQ8Ug",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_Dewaine_Robinson": {
+              "foreach": "@body('Dewaine_Robinson')",
+              "actions": {
+                "Append_Dewaine_Robinson": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "75e0874f-069d-4c16-b5f9-ddedd211d160"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "YouTubeContent",
+                    "value": {
+                      "Channel": "Dewaine Robinson",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Lisa_Crosbie": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "49a9dbab-5a77-4f81-8e79-6b5d3bde94f4"
+              },
+              "type": "Foreach"
+            },
+            "Damien_Bird": {
+              "runAfter": {
+                "Dewaine_Robinson": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "567b0820-b722-4f67-867d-d55c15dce959",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC-NCKrEw6CM8fidaIk-yrUQ",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_Damien_Bird": {
+              "foreach": "@body('Damien_Bird')",
+              "actions": {
+                "Append_Damobird365": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "75e0874f-069d-4c16-b5f9-ddedd211d160"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "YouTubeContent",
+                    "value": {
+                      "Channel": "Damien Bird (DamoBird365)",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Dewaine_Robinson": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "49a9dbab-5a77-4f81-8e79-6b5d3bde94f4"
+              },
+              "type": "Foreach"
+            },
+            "Daniel_Christian": {
+              "runAfter": {
+                "Damien_Bird": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "567b0820-b722-4f67-867d-d55c15dce959",
+                "flowSystemMetadata": {
+                  "swaggerOperationId": "ListFeedItems"
+                }
+              },
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": {
+                    "name": "@parameters('$connections')['shared_rss']['connectionId']"
+                  }
+                },
+                "method": "get",
+                "path": "/ListFeedItems",
+                "queries": {
+                  "feedUrl": "https://www.youtube.com/feeds/videos.xml?channel_id=UC-NCKrEw6CM8fidaIk-yrUQ",
+                  "since": "@body('Get_1_week_ago')",
+                  "sinceProperty": "PublishDate"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Apply_to_each_Daniel_Christian": {
+              "foreach": "@body('Daniel_Christian')",
+              "actions": {
+                "Append_Daniel_Christian": {
+                  "runAfter": {},
+                  "metadata": {
+                    "operationMetadataId": "75e0874f-069d-4c16-b5f9-ddedd211d160"
+                  },
+                  "type": "AppendToArrayVariable",
+                  "inputs": {
+                    "name": "YouTubeContent",
+                    "value": {
+                      "Channel": "Daniel Christian",
+                      "Title": "@concat('<a href=\"', item()?['primaryLink'], '\">', item()['title'], '</a>')",
+                      "Date": "@formatDateTime(item()?['publishDate'], 'MM/dd/yyyy')"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "Apply_to_each_Damien_Bird": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "49a9dbab-5a77-4f81-8e79-6b5d3bde94f4"
+              },
+              "type": "Foreach"
+            }
+          },
+          "runAfter": {
+            "Notify_of_failure_2": [
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7e669b3a-0f82-4912-9372-34aa3c0431b6"
+          },
+          "type": "Scope"
+        },
+        "Initialize_YouTube_Content_Array": {
+          "runAfter": {
+            "Initialize_Blog_Content_Array": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "34282337-9c56-40bf-8fa9-e8e13bd6e415"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "YouTubeContent",
+                "type": "array"
+              }
+            ]
+          }
+        },
+        "Get_1_week_ago": {
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "6333ac6e-b10c-4d02-9b0f-126a61a71608"
+          },
+          "type": "Expression",
+          "kind": "GetPastTime",
+          "inputs": {
+            "interval": 9,
+            "timeUnit": "Day"
+          }
+        },
+        "Notify_of_failure": {
+          "runAfter": {
+            "Blogs_with_Product_Updates_SCOPE": [
+              "Failed"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "23ac8159-dece-426e-9727-8ae42bc0d676",
+            "flowSystemMetadata": {
+              "swaggerOperationId": "SendEmailV2"
+            }
+          },
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['shared_office365_2']['connectionId']"
+              }
+            },
+            "method": "post",
+            "body": {
+              "To": "@parameters('Email Recipient (russ_EmailTo)')",
+              "Subject": "Product News E-mail Notification failed",
+              "Body": "<p><br></p>",
+              "Importance": "Normal"
+            },
+            "path": "/v2/Mail",
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Notify_of_failure_2": {
+          "runAfter": {
+            "Service_Messages_SCOPE": [
+              "Failed"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "127adb57-bcbc-4edf-9e4f-8644078d7576",
+            "flowSystemMetadata": {
+              "swaggerOperationId": "SendEmailV2"
+            }
+          },
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['shared_office365_2']['connectionId']"
+              }
+            },
+            "method": "post",
+            "body": {
+              "To": "@parameters('Email Recipient (russ_EmailTo)')",
+              "Subject": "Product News E-mail Notification failed",
+              "Body": "<p><br></p>",
+              "Importance": "Normal"
+            },
+            "path": "/v2/Mail",
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Notify_of_failure_3": {
+          "runAfter": {
+            "MVP_YouTubes_Scope": [
+              "Failed"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "49ac3326-3d95-466b-a9a0-d1c0419e4780",
+            "flowSystemMetadata": {
+              "swaggerOperationId": "SendEmailV2"
+            }
+          },
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['shared_office365_2']['connectionId']"
+              }
+            },
+            "method": "post",
+            "body": {
+              "To": "@parameters('Email Recipient (russ_EmailTo)')",
+              "Subject": "Product News E-mail Notification failed",
+              "Body": "<p><br></p>",
+              "Importance": "Normal"
+            },
+            "path": "/v2/Mail",
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "List_Connectors": {
+          "runAfter": {
+            "Get_2_months_ago": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "51e23374-d4d3-490b-bd81-5bcb2ce72cdd",
+            "flowSystemMetadata": {
+              "swaggerOperationId": "ListApis"
+            }
+          },
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "name": "@parameters('$connections')['shared_flowmanagement']['connectionId']"
+              }
+            },
+            "method": "get",
+            "path": "/apis",
+            "queries": {
+              "environmentName": "18571ae9-2db1-e2fc-97ef-2398a6944c06"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        },
+        "Initialize_ConnectorCount": {
+          "runAfter": {
+            "List_Connectors": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "3224d55f-0757-4b68-94f5-efcc97ebac09"
+          },
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "ConnectorCount",
+                "type": "integer",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "Filter_Connectors": {
+          "runAfter": {
+            "Initialize_ConnectorCount": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "4eed31e9-9ec2-449f-af3a-d5988bd9b6d6"
+          },
+          "type": "Query",
+          "inputs": {
+            "from": "@body('List_Connectors')?['value']",
+            "where": "@greater(ticks(item()?['properties']?['createdTime']), ticks(addDays(utcNow(), -7, 'MM/dd/yyyy')))"
+          }
+        },
+        "Apply_to_each": {
+          "foreach": "@body('Filter_Connectors')",
+          "actions": {
+            "Compose": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "a145fdb6-d6c1-40e4-956a-b275f7600ef3"
+              },
+              "type": "Compose",
+              "inputs": "<tr>\n<td>@{items('Apply_to_each')?['properties']?['displayName']}</td><td>@{formatDateTime(items('Apply_to_each')?['properties']?['createdTime'], 'MM/dd/yyyy')}</td>\n</tr>"
+            },
+            "Increment_Connector_Count": {
+              "runAfter": {
+                "Compose": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "466aba4f-e7cf-4e73-bf41-9407ef39170b"
+              },
+              "type": "IncrementVariable",
+              "inputs": {
+                "name": "ConnectorCount",
+                "value": 1
+              }
+            }
+          },
+          "runAfter": {
+            "Filter_Connectors": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8969c5bc-8e0d-404b-8007-4b0b43f955c5"
+          },
+          "type": "Foreach"
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}
